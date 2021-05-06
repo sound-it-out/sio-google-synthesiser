@@ -84,6 +84,9 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+*.nuget.*.config
+*.nuget.config
+nuget.config
 
 # Chutzpah Test files
 _Chutzpah*
