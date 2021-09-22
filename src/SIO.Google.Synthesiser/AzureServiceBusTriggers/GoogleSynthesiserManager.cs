@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Clipboard;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Extensions.Logging;
 using SIO.Domain.Documents.Events;
 using SIO.Domain.Translations.Events;
-using SIO.Google.Synthesiser.Extensions;
 using SIO.Google.Synthesiser.Functions;
 using SIO.Infrastructure.Azure.ServiceBus.Messages;
 using SIO.Infrastructure.Events;
-using SIO.Infrastructure.Extensions;
 
 namespace SIO.Google.Synthesiser.AzureServiceBusTriggers
 {
@@ -66,23 +61,31 @@ namespace SIO.Google.Synthesiser.AzureServiceBusTriggers
 
                 var translationQueuedEvent = new TranslationQueued(
                     subject: context.Payload.Subject,
-                    version: 1
+                    version: 2
                 );
 
-                var streamId = StreamId.From(Guid.NewGuid().ToString());
+                var streamId = StreamId.From(context.StreamId);
 
                 await _eventManager.ProcessAsync(streamId, translationQueuedEvent, cancellationToken);
 
-                var request = new ProcessTextRequest
+                try
                 {
-                    StreamId = streamId,
-                    FileName = $"{translationQueuedEvent.Subject}{Path.GetExtension(context.Payload.FileName)}",
-                    Subject = translationQueuedEvent.Subject,
-                    UserId = context.Payload.User,
-                    Version = translationQueuedEvent.Version + 1
-                };
+                    var request = new ProcessTextRequest
+                    {
+                        StreamId = streamId,
+                        FileName = $"{translationQueuedEvent.Subject}{Path.GetExtension(context.Payload.FileName)}",
+                        Subject = translationQueuedEvent.Subject,
+                        UserId = context.Payload.User,
+                        Version = translationQueuedEvent.Version + 1
+                    };
 
-                await _processText.ExecuteAsync(request, client, cancellationToken);
+                    await _processText.ExecuteAsync(request, client, cancellationToken);
+                }
+                catch (Exception e)
+                {
+                    var translationFailed = new TranslationFailed(translationQueuedEvent.Subject, translationQueuedEvent.Version, e.Message);
+                    await _eventManager.ProcessAsync(streamId, translationFailed);
+                }                
             }
         }
     }

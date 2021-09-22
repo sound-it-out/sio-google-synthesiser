@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace SIO.Google.Credentials.Connections
 {
-    internal sealed class GoogleConnection : IGoogleConnection
+    public sealed class GoogleConnection : IGoogleConnection
     {
         private readonly GoogleCredential _underlyingConnection;
 

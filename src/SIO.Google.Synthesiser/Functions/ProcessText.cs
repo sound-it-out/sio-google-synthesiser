@@ -47,53 +47,60 @@ namespace SIO.Google.Synthesiser.Functions
                 _logger.LogInformation($"{nameof(ProcessText)}.{nameof(ExecuteAsync)} was cancelled before execution");
                 cancellationToken.ThrowIfCancellationRequested();
             }
-
-            using (var ms = new MemoryStream())
+            try
             {
-                await _fileClient.DownloadAsync(request.FileName, request.UserId, ms, cancellationToken);
-                ms.Position = 0;
-
-                if (!_fileExtensionContentTypeProvider.TryGetContentType(request.FileName, out var contentType))
+                using (var ms = new MemoryStream())
                 {
-                    contentType = "application/octet-stream";
-                }
+                    await _fileClient.DownloadAsync(request.FileName, request.UserId, ms, cancellationToken);
+                    ms.Position = 0;
 
-                using (var textExtractor = TextExtractor.Open(ms, contentType))
-                {
-                    var text = await textExtractor.ExtractAsync();
-                    var chunks = text.ChunkWithDelimeters(5000, '.', '!', '?', ')', '"', '}', ']').ToArray();
-
-                    var translationStarted = new TranslationStarted(request.Subject, request.Version, chunks.Sum(c => c.Length), chunks.Length);
-
-                    await _eventManager.ProcessAsync(StreamId.From(request.StreamId), translationStarted);
-
-                    var index = 1;
-                    var timeout = 0;
-                    foreach (var chunk in chunks.Chunk(30))
+                    if (!_fileExtensionContentTypeProvider.TryGetContentType(request.FileName, out var contentType))
                     {
-                        if (index > 1)
-                            timeout++;
+                        contentType = "application/octet-stream";
+                    }
 
-                        var tasks = new List<Task>();
+                    using (var textExtractor = TextExtractor.Open(ms, contentType))
+                    {
+                        var text = await textExtractor.ExtractAsync();
+                        var chunks = text.ChunkWithDelimeters(5000, '.', '!', '?', ')', '"', '}', ']').ToArray();
 
-                        foreach (var child in chunk)
+                        var translationStarted = new TranslationStarted(request.Subject, request.Version, chunks.Sum(c => c.Length), chunks.Length);
+
+                        await _eventManager.ProcessAsync(StreamId.From(request.StreamId), translationStarted);
+
+                        var index = 1;
+                        var timeout = 0;
+                        foreach (var chunk in chunks.Chunk(30))
                         {
-                            tasks.Add(client.StartNewAsync(SynthesizeSpeech.Name, new SynthesizeSpeechRequest
+                            if (index > 1)
+                                timeout++;
+
+                            var tasks = new List<Task>();
+
+                            foreach (var child in chunk)
                             {
-                                StreamId = request.StreamId,
-                                Subject = request.Subject,
-                                Text = child,
-                                UserId = request.UserId,
-                                Version = request.Version + index,
-                                Delay = timeout
-                            }));
+                                tasks.Add(client.StartNewAsync(SynthesizeSpeech.Name, new SynthesizeSpeechRequest
+                                {
+                                    StreamId = request.StreamId,
+                                    Subject = request.Subject,
+                                    Text = child,
+                                    UserId = request.UserId,
+                                    Version = request.Version + index,
+                                    Delay = timeout
+                                }));
+                            }
+
+                            await Task.WhenAll(tasks);
+
+                            index++;
                         }
-
-                        await Task.WhenAll(tasks);
-
-                        index++;
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                var translationFailed = new TranslationFailed(request.Subject, request.Version, e.Message);
+                await _eventManager.ProcessAsync(StreamId.From(request.StreamId), translationFailed);
             }
         }
     }

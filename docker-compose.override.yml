@@ -10,6 +10,7 @@ services:
       - FUNCTIONS_WORKER_RUNTIME=dotnet
       - AzureWebJobsScriptRoot=/home/site/wwwroot
       - AzureFunctionsJobHost__Logging__Console__IsEnabled=true
+      - AzureWebJobsStorage=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://host.docker.internal:10000/devstoreaccount1;QueueEndpoint=http://host.docker.internal:10001/devstoreaccount1;
     ports:
       - "80"
       - "443"

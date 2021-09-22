@@ -9,6 +9,6 @@ namespace SIO.Google.Synthesiser.Events
 {
     public interface IEventManager
     {
-        Task ProcessAsync<T>(StreamId streamId, T @event, CancellationToken cancellationToken = default) where T : IEvent;
+        Task ProcessAsync<TEvent>(StreamId streamId, TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent;
     }
 }

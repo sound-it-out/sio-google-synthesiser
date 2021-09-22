@@ -33,6 +33,11 @@
     <ProjectReference Include="..\SIO.Google.Credentials\SIO.Google.Credentials.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="SIO.Infrastructure.Connections">
+      <HintPath>..\..\..\sio-infrastructure\src\SIO.Infrastructure.Connections\bin\Debug\netstandard2.0\SIO.Infrastructure.Connections.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

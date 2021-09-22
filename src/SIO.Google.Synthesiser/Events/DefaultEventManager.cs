@@ -23,10 +23,10 @@ namespace SIO.Google.Synthesiser.Events
             _eventBusPublisher = eventBusPublisher;
         }
 
-        public async Task ProcessAsync<T>(StreamId streamId, T @event, CancellationToken cancellationToken = default) where T : IEvent
+        public async Task ProcessAsync<TEvent>(StreamId streamId, TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
         {
             var context = new EventContext<IEvent>(streamId: streamId, @event: @event, correlationId: null, causationId: null, @event.Timestamp, actor: Actor.From("unknown"));
-            var notification = new EventNotification<T>(streamId: StreamId.New(), @event: @event, correlationId: null, causationId: null, timestamp: DateTimeOffset.UtcNow, userId: null);
+            var notification = new EventNotification<TEvent>(streamId: StreamId.New(), @event: @event, correlationId: null, causationId: null, timestamp: DateTimeOffset.UtcNow, userId: null);
             await _eventStore.SaveAsync(streamId, new IEventContext<IEvent>[] { context }, cancellationToken);
             await _eventBusPublisher.PublishAsync(notification, cancellationToken);
         }

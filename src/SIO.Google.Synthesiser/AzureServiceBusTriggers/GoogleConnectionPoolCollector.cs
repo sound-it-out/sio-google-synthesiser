@@ -8,20 +8,21 @@ using SIO.Domain.Translations.Events;
 using SIO.Google.Credentials.Connections;
 using SIO.Google.Synthesiser.Projections;
 using SIO.Infrastructure.Azure.ServiceBus.Messages;
+using SIO.Infrastructure.Connections.Pooling;
 using SIO.Infrastructure.Events;
 
-namespace SIO.Google.Synthesiser.AzureServiceBusTriggers
+namespace SIO.Google.Synthesiser.Triggers
 {
     class GoogleConnectionPoolCollector
     {
         public const string Name = "sio-google-connection-pool-collector";
         private readonly IEventContextFactory _eventContextFactory;
-        private readonly IGoogleConnectionPool _googleConnectionPool;
+        private readonly IConnectionPool<GoogleConnection> _googleConnectionPool;
         private readonly ILogger<GoogleConnectionPoolCollector> _logger;
         private readonly IInMemoryProjector<TranslationProjection> _inMemoryProjector;
 
         public GoogleConnectionPoolCollector(IEventContextFactory eventContextFactory,
-            IGoogleConnectionPool googleConnectionPool,
+            IConnectionPool<GoogleConnection> googleConnectionPool,
             ILogger<GoogleConnectionPoolCollector> logger,
             IInMemoryProjector<TranslationProjection> inMemoryProjector)
         {
@@ -55,7 +56,7 @@ namespace SIO.Google.Synthesiser.AzureServiceBusTriggers
                 var streamId = StreamId.From(context.StreamId);
                 var projection = await _inMemoryProjector.ProjectAsync(streamId, context.Payload);
 
-                if (projection.Stopped)
+                if (projection.Stopped && projection.TranslationType == Domain.Documents.Events.TranslationType.Google)
                     _googleConnectionPool.ReleaseConnection(streamId);
             }
         }

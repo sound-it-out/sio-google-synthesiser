@@ -6,8 +6,9 @@ namespace SIO.Domain.Translations.Events
     {
         public string Error { get; set; }
 
-        public TranslationFailed(string subject, int version) : base(subject, version)
+        public TranslationFailed(string subject, int version, string error) : base(subject, version)
         {
+            Error = error;
         }
     }
 }
