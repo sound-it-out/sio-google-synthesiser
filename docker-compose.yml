@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  sio.google.synthesiser:
+    image: ${DOCKER_REGISTRY-}siogooglesynthesiser
+    build:
+      context: .
+      dockerfile: src/SIO.Google.Synthesiser/Dockerfile
+networks:    
+  default:
+    external:
+        name: sio.network
