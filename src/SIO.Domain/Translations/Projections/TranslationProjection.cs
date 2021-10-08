@@ -7,7 +7,7 @@ using SIO.Infrastructure.Projections;
 
 namespace SIO.Google.Synthesiser.Projections
 {
-    internal class TranslationProjection : ProjectionManager<TranslationProjection>, IProjection
+    public sealed class TranslationProjection : ProjectionManager<TranslationProjection>, IProjection
     {
         public TranslationProjection(ILogger<ProjectionManager<TranslationProjection>> logger) : base(logger)
         {
@@ -18,12 +18,11 @@ namespace SIO.Google.Synthesiser.Projections
             Handle<TranslationFailed>(HandleAsync);
         }
 
-        public bool Stopped => Failed || CharactersProcessed == TotalCharacters && (Version - 2) == ProcessCount;
+        public bool Stopped => Failed || CharactersProcessed == TotalCharacters;
         public TranslationType TranslationType { get; private set; }
         public bool Failed { get; private set; }
         public long CharactersProcessed { get; private set; }
         public long TotalCharacters { get; private set; }
-        public long ProcessCount { get; private set; }
         public int Version { get; private set; }
 
         public Task HandleAsync(DocumentUploaded @event)
@@ -36,7 +35,6 @@ namespace SIO.Google.Synthesiser.Projections
         public Task HandleAsync(TranslationStarted @event)
         {
             TotalCharacters = @event.CharacterCount;
-            ProcessCount = @event.ProcessCount;
             Version = @event.Version;
             return Task.CompletedTask;
         }
