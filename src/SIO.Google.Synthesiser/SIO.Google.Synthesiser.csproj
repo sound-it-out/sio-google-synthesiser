@@ -12,13 +12,13 @@
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.0.4" OutputItemType="Analyzer" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
-	<PackageReference Include="SIO.Infrastructure" Version="0.0.3" />
-	<PackageReference Include="SIO.Infrastructure.Azure.ServiceBus" Version="0.0.3" />
-	<PackageReference Include="SIO.Infrastructure.Azure.Storage" Version="0.0.3" />
-	<PackageReference Include="SIO.Infrastructure.EntityFrameworkCore.SqlServer" Version="0.0.3" />
-	<PackageReference Include="SIO.Infrastructure.RabbitMQ" Version="0.0.3" />
+	<PackageReference Include="SIO.Infrastructure" Version="0.0.5" />
+	<PackageReference Include="SIO.Infrastructure.Azure.ServiceBus" Version="0.0.5" />
+	<PackageReference Include="SIO.Infrastructure.Azure.Storage" Version="0.0.5" />
+	<PackageReference Include="SIO.Infrastructure.EntityFrameworkCore.SqlServer" Version="0.0.5" />
+	<PackageReference Include="SIO.Infrastructure.RabbitMQ" Version="0.0.5" />
 	<PackageReference Include="Clipboard" Version="1.2.1" />
-	<PackageReference Include="SIO.Infrastructure.Serialization.Json" Version="0.0.3" />
+	<PackageReference Include="SIO.Infrastructure.Serialization.Json" Version="0.0.5" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIO.Domain\SIO.Domain.csproj" />

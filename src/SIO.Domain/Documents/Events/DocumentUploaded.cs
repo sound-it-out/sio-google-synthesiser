@@ -8,8 +8,11 @@ namespace SIO.Domain.Documents.Events
         public string TranslationSubject { get; set; }
         public string FileName { get; set; }
 
-        public DocumentUploaded(string subject, int version, string user) : base(subject, version, user)
+        public DocumentUploaded(string subject, int version, string user, TranslationType translationType, string fileName, string translationSubject) : base(subject, version, user)
         {
+            TranslationType = translationType;
+            TranslationSubject = translationSubject;
+            FileName = fileName;
         }
     }
 }

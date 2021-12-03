@@ -19,11 +19,11 @@ namespace SIO.Google.Synthesiser.Projections
         }
 
         public bool Stopped => Failed || CharactersProcessed == TotalCharacters;
-        public TranslationType TranslationType { get; private set; }
-        public bool Failed { get; private set; }
-        public long CharactersProcessed { get; private set; }
-        public long TotalCharacters { get; private set; }
-        public int Version { get; private set; }
+        public TranslationType TranslationType { get; set; }
+        public bool Failed { get; set; }
+        public long CharactersProcessed { get; set; }
+        public long TotalCharacters { get; set; }
+        public int Version { get; set; }
 
         public Task HandleAsync(DocumentUploaded @event)
         {
