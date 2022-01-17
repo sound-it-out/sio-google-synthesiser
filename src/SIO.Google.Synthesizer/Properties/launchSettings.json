@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SIO.Google.Synthesizer": {
+      "commandName": "Project"
+    },
+    "Docker (1)": {
+      "commandName": "Docker"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+version: '3.4'
+
+services:
+  sio.google.synthesizer:
+    image: ${DOCKER_REGISTRY-}siogooglesynthesizer
+    build:
+      context: .
+      dockerfile: src/SIO.Google.Synthesizer/Dockerfile
+    depends_on: 
+      - sio.google.synthesizer.sql
+    external_links:
+      - sio.sql.store
+      - sio.storage
+  sio.google.synthesizer.sql:
+    image: "mcr.microsoft.com/mssql/server:2019-latest"
+networks:    
+  default:
+    external:
+        name: sio.network

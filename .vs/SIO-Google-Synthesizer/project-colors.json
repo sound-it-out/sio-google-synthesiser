@@ -1,0 +1,36 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "49ff12f9-41b4-4a17-9cbf-a6602b348edc": {
+      "ProjectGuid": "49ff12f9-41b4-4a17-9cbf-a6602b348edc",
+      "DisplayName": "SIO.Google.Synthesizer",
+      "ColorIndex": 0
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
+    },
+    "4d1520ed-dd80-4705-bbb6-0d25a22d81be": {
+      "ProjectGuid": "4d1520ed-dd80-4705-bbb6-0d25a22d81be",
+      "DisplayName": "docker-compose",
+      "ColorIndex": 1
+    },
+    "aad2ffc5-11a9-4139-a1bb-6bbb2d4cc83b": {
+      "ProjectGuid": "aad2ffc5-11a9-4139-a1bb-6bbb2d4cc83b",
+      "DisplayName": "SIO.Google.Credentials",
+      "ColorIndex": 2
+    },
+    "6ce7a7ea-8438-4649-8b45-e6e5d83fb9c3": {
+      "ProjectGuid": "6ce7a7ea-8438-4649-8b45-e6e5d83fb9c3",
+      "DisplayName": "SIO.Domain",
+      "ColorIndex": 3
+    },
+    "5ed9cec6-21cf-4493-a9e5-796d00b79e39": {
+      "ProjectGuid": "5ed9cec6-21cf-4493-a9e5-796d00b79e39",
+      "DisplayName": "SIO.Migrations",
+      "ColorIndex": 4
+    }
+  },
+  "NextColorIndex": 5
+}
