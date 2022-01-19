@@ -11,6 +11,7 @@ namespace SIO.Domain.GoogleSynthesizes.Aggregates
             Handles<GoogleSynthesizeQueued>(Handle);
             Handles<GoogleSynthesizeFailed>(Handle);
             Handles<GoogleSynthesizeSucceded>(Handle);
+            Handles<GoogleSynthesizeStarted>(Handle);
             Handles<GoogleSynthesizeProcessQueued>(Handle);
             Handles<GoogleSynthesizeProcessSucceeded>(Handle);
         }
@@ -26,6 +27,14 @@ namespace SIO.Domain.GoogleSynthesizes.Aggregates
                 version: Version + 1,
                 publicationDate: publicationDate,
                 documentSubject: eventSubject
+            ));
+        }
+
+        public void Start()
+        {
+            Apply(new GoogleSynthesizeStarted(
+                subject: Id,
+                version: Version + 1
             ));
         }
 
@@ -89,9 +98,15 @@ namespace SIO.Domain.GoogleSynthesizes.Aggregates
             Version = @event.Version;
         }
 
+        private void Handle(GoogleSynthesizeStarted @event)
+        {
+            _state.Status = GoogleSynthesizeStatus.Processing;
+            Version = @event.Version;
+        }
+
         private void Handle(GoogleSynthesizeProcessQueued @event)
         {
-            _state.SynthesizeProcesses.Add(new SynthesizeProcess(@event.Order, @event.Subject, false));
+            _state.SynthesizeProcesses.Add(new SynthesizeProcess(@event.Order, @event.ProcessSubject, false));
             Version = @event.Version;
         }
 

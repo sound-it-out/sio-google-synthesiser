@@ -7,6 +7,7 @@ namespace SIO.Domain.GoogleSynthesizes.Projections
     {
         public string Subject { get; set; }
         public string DocumentSubject { get; set; }
+        public GoogleSynthesizeStatus Status { get; set; }
         public int Attempts { get; set; }  
     }
 }

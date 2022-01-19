@@ -11,7 +11,10 @@ namespace SIO.Domain
         {
             typeof(GoogleSynthesizeQueued),
             typeof(GoogleSynthesizeFailed),
-            typeof(GoogleSynthesizeSucceded)
+            typeof(GoogleSynthesizeSucceded),
+            typeof(GoogleSynthesizeStarted),
+            typeof(GoogleSynthesizeProcessQueued),
+            typeof(GoogleSynthesizeProcessSucceeded)
         }).ToArray();
     }
 }

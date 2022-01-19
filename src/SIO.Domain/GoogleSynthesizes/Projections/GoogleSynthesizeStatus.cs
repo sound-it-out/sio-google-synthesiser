@@ -1,10 +1,9 @@
-﻿namespace SIO.Domain.GoogleSynthesizes.Aggregates
+﻿namespace SIO.Domain.GoogleSynthesizes.Projections
 {
     public enum GoogleSynthesizeStatus
-    {        
+    {
         Failed,
         Queued,
-        Succeeded,
         Processing
     }
 }

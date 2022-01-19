@@ -38,16 +38,16 @@ namespace SIO.Google.Synthesizer.Extensions
                     {
                             new GoogleCredentialOptions
                             {
-                                Type = configuration.GetValue<string>("Google__Credentials__type"),
-                                ProjectId = configuration.GetValue<string>("Google__Credentials__project_id"),
-                                PrivateKeyId = configuration.GetValue<string>("Google__Credentials__private_key_id"),
-                                PrivateKey = configuration.GetValue<string>("Google__Credentials__private_key"),
-                                ClientEmail = configuration.GetValue<string>("Google__Credentials__client_email"),
-                                ClientId = configuration.GetValue<string>("Google__Credentials__client_id"),
-                                AuthUri = configuration.GetValue<string>("Google__Credentials__auth_uri"),
-                                TokenUri = configuration.GetValue<string>("Google__Credentials__token_uri"),
-                                AuthProviderX509CertUrl = configuration.GetValue<string>("Google__Credentials__auth_provider_x509_cert_url"),
-                                ClientX509CertUrl = configuration.GetValue<string>("Google__Credentials__client_x509_cert_url")
+                                Type = configuration.GetValue<string>("Google:Credentials:type"),
+                                ProjectId = configuration.GetValue<string>("Google:Credentials:project_id"),
+                                PrivateKeyId = configuration.GetValue<string>("Google:Credentials:private_key_id"),
+                                PrivateKey = configuration.GetValue<string>("Google:Credentials:private_key"),
+                                ClientEmail = configuration.GetValue<string>("Google:Credentials:client_email"),
+                                ClientId = configuration.GetValue<string>("Google:Credentials:client_id"),
+                                AuthUri = configuration.GetValue<string>("Google:Credentials:auth_uri"),
+                                TokenUri = configuration.GetValue<string>("Google:Credentials:token_uri"),
+                                AuthProviderX509CertUrl = configuration.GetValue<string>("Google:Credentials:auth_provider_x509_cert_url"),
+                                ClientX509CertUrl = configuration.GetValue<string>("Google:Credentials:client_x509_cert_url")
                             }
                     };
                 });

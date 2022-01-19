@@ -93,7 +93,7 @@ namespace SIO.Domain.GoogleSynthesizes.Services
                                 version: 0,
                                 Actor.Unknown,
                                 @event.ScheduledPublication,
-                                @event.Payload.Id
+                                @event.StreamId
                             ));
                         }                            
 

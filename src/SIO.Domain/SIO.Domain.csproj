@@ -7,13 +7,9 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="SIO.Infrastructure" Version="0.0.7" />
-		<PackageReference Include="SIO.Infrastructure.Azure.ServiceBus" Version="0.0.7" />
-		<PackageReference Include="SIO.Infrastructure.Azure.Storage" Version="0.0.7" />
-		<PackageReference Include="SIO.Infrastructure.RabbitMQ" Version="0.0.7" />
-		<PackageReference Include="SIO.Infrastructure.EntityFrameworkCore.SqlServer" Version="0.0.7" />
+		<PackageReference Include="SIO.Infrastructure.RabbitMQ" Version="0.0.8" />
 		<PackageReference Include="SIO.IntegrationEvents" Version="0.0.1" />
-		<PackageReference Include="Google.Cloud.TextToSpeech.V1" Version="2.1.0" />
+		<PackageReference Include="Google.Cloud.TextToSpeech.V1" Version="2.4.0" />
 		<PackageReference Include="Clipboard" Version="1.2.1" />
 	</ItemGroup>
 

@@ -54,6 +54,9 @@ namespace SIO.Migrations.Migrations.SIO.Projection
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.HasKey("Subject");
 
                     b.HasIndex("DocumentSubject");
