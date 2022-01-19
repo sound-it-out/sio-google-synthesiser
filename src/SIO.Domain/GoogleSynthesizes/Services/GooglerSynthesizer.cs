@@ -57,6 +57,8 @@ namespace SIO.Domain.GoogleSynthesizes.Services
                     {
                         var eventsInQueue = await context.Set<GoogleSynthesizeQueue>()
                             .AsQueryable()
+                            .AsNoTracking()
+                            .Where(gs => gs.Status != GoogleSynthesizeStatus.Processing)
                             .Take(50)
                             .ToArrayAsync(cancellationToken);
 

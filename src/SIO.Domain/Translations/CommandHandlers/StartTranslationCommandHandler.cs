@@ -83,27 +83,27 @@ namespace SIO.Domain.Translations.CommandHandlers
                     translation.Start(chunks.Sum(c => c.Length));
 
                     var i = 0;
-
-                    using var sw = new StreamWriter(ms);
+                    
                     foreach (var chunk in chunks)
                     {
-                        var processSubject = Subject.New();
-
-                        await sw.FlushAsync();
-                        ms.Position = 0;                        
-
+                        using var s = new MemoryStream();
+                        using var sw = new StreamWriter(s);
+                        var processSubject = Subject.New();                
                         await sw.WriteAsync(chunk);
-                        await _fileClient.UploadAsync($"{processSubject}.txt", command.Actor, ms, cancellationToken);
+                        await sw.FlushAsync();
+                        s.Position = 0;
+                        await _fileClient.UploadAsync($"{processSubject}.txt", documentState.User, s, cancellationToken);
 
                         googleSynthesis.QueueProcess(i++, processSubject: processSubject);
                     }                        
 
-                    await _googleSynthesizerAggregateRepository.SaveAsync(googleSynthesis, cancellationToken: cancellationToken);
+                    await _googleSynthesizerAggregateRepository.SaveAsync(googleSynthesis, command, cancellationToken: cancellationToken);
                     googleSynthesisState = googleSynthesis.GetState();
                 }
 
                 await Task.WhenAll(googleSynthesisState.SynthesizeProcesses.Where(sp => !sp.Processed).Select(sp => 
                     ProcessTextChunkasync(
+                        command: command,
                         googleSynthesis: googleSynthesis,
                         translation: translation,
                         documentState: documentState,
@@ -116,7 +116,12 @@ namespace SIO.Domain.Translations.CommandHandlers
                 _googleConnectionPool.ReleaseConnection(connectionId);
 
                 using var audioStream = await GetAudioStream(googleSynthesis, documentState, cancellationToken);
-                await _fileClient.UploadAsync($"{documentState.Subject}.mp3", documentState.User, audioStream, cancellationToken);
+
+                await _fileClient.UploadAsync($"{documentState.Subject}.mp3", documentState.User, audioStream, cancellationToken);                
+                await Task.WhenAll(
+                    googleSynthesisState.SynthesizeProcesses.Select(sp => _fileClient.DeleteAsync($"{sp.Subject}.txt", documentState.User, cancellationToken))
+                    .Concat(new Task[] { _fileClient.DeleteAsync($"{documentState.Subject}.txt", documentState.User, cancellationToken) })  
+                );
 
                 googleSynthesis.Succeed();
                 translation.Succeed();
@@ -130,8 +135,8 @@ namespace SIO.Domain.Translations.CommandHandlers
             finally
             {
                 _googleConnectionPool.ReleaseConnection(connectionId);
-                await _googleSynthesizerAggregateRepository.SaveAsync(googleSynthesis, cancellationToken: cancellationToken);
-                await _storeAggregateRepository.SaveAsync(translation, cancellationToken: cancellationToken);
+                await _googleSynthesizerAggregateRepository.SaveAsync(googleSynthesis, command, cancellationToken: cancellationToken);
+                await _storeAggregateRepository.SaveAsync(translation, command, cancellationToken: cancellationToken);
             }
         }
 
@@ -161,7 +166,8 @@ namespace SIO.Domain.Translations.CommandHandlers
             return rv;
         }
 
-        private async Task ProcessTextChunkasync(GoogleSynthesize googleSynthesis,
+        private async Task ProcessTextChunkasync(StartTranslationCommand command,
+            GoogleSynthesize googleSynthesis,
             Translation translation,
             DocumentState documentState,
             SynthesizeProcess synthesizeProcess,
@@ -186,7 +192,8 @@ namespace SIO.Domain.Translations.CommandHandlers
                 },
                 voice: new VoiceSelectionParams
                 {
-                    Name = documentState.TranslationOptionSubject
+                    Name = documentState.TranslationOptionSubject,
+                    LanguageCode = "en-GB"
                 },
                 audioConfig: new AudioConfig
                 {
@@ -195,13 +202,13 @@ namespace SIO.Domain.Translations.CommandHandlers
             );
 
             using var stream = new MemoryStream(response.AudioContent.ToByteArray());
-            await _fileClient.UploadAsync($"{synthesizeProcess.Subject}.mp3", documentState.User, stream, cancellationToken);
+            await _fileClient.UploadAsync($"{synthesizeProcess.Subject}.mp3", documentState.User, stream, cancellationToken);            
 
             translation.Process(text.Length);
             googleSynthesis.SucceedProcess(synthesizeProcess.Subject);
 
-            await _googleSynthesizerAggregateRepository.SaveAsync(googleSynthesis, cancellationToken: cancellationToken);
-            await _storeAggregateRepository.SaveAsync(translation, cancellationToken: cancellationToken);
+            await _googleSynthesizerAggregateRepository.SaveAsync(googleSynthesis, command, cancellationToken: cancellationToken);
+            await _storeAggregateRepository.SaveAsync(translation, command, cancellationToken: cancellationToken);            
         }
     }
 }

@@ -43,6 +43,14 @@ namespace SIO.Domain.Translations.CommandHandlers
         {
             try
             {
+                var googleSynthesis = await _googleSynthesizerAggregateRepository.GetAsync<GoogleSynthesize, GoogleSynthesizeState>(command.Subject, cancellationToken);
+
+                if (googleSynthesis.GetState().Status == GoogleSynthesizeStatus.Processing)
+                    return;
+
+                googleSynthesis.Start();
+                await _googleSynthesizerAggregateRepository.SaveAsync(googleSynthesis, command, cancellationToken: cancellationToken);
+
                 var translation = _aggregateFactory.FromHistory<Translation, TranslationState>(Enumerable.Empty<IEvent>());
 
                 translation.Queue(command.Subject, command.DocumentSubject);
@@ -57,13 +65,13 @@ namespace SIO.Domain.Translations.CommandHandlers
                         await commandDispatcher.DispatchAsync(new StartTranslationCommand(command.Subject, correlationId: CorrelationId.New(), command.Version + 1, Actor.Unknown), ct);
                     }                    
 
-                }, ExecutionType.FireAndForget);
+                }, ExecutionType.Await);
             }
             catch (Exception ex)
             {
                 var googleSynthesis = await _googleSynthesizerAggregateRepository.GetAsync<GoogleSynthesize, GoogleSynthesizeState>(command.Subject, cancellationToken);
                 googleSynthesis.Fail($"{nameof(QueueTranslationCommandHandler)}.{nameof(QueueTranslationCommandHandler.ExecuteAsync)} - {ex.Message}");
-                await _googleSynthesizerAggregateRepository.SaveAsync(googleSynthesis, cancellationToken: cancellationToken);
+                await _googleSynthesizerAggregateRepository.SaveAsync(googleSynthesis, command, cancellationToken: cancellationToken);
             }
         }
     }

@@ -28,6 +28,7 @@ namespace SIO.Migrations.Migrations.SIO.Projection
                 {
                     Subject = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DocumentSubject = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     Attempts = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

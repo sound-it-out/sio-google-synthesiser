@@ -10,7 +10,7 @@ namespace SIO.Domain.GoogleSynthesizes.Projections.Managers
     {
         private readonly IEnumerable<IProjectionWriter<GoogleSynthesizeQueue>> _projectionWriters;
         private readonly ISIOProjectionDbContextFactory _projectionDbContextFactory;
-        private readonly GoogleSynthesizeOptions _GoogleSynthesizeOptions;
+        private readonly GoogleSynthesizeOptions _googleSynthesizeOptions;
 
         public GoogleSynthesizeQueueProjectionManager(ILogger<ProjectionManager<GoogleSynthesizeQueue>> logger,
             IEnumerable<IProjectionWriter<GoogleSynthesizeQueue>> projectionWriters,
@@ -26,11 +26,12 @@ namespace SIO.Domain.GoogleSynthesizes.Projections.Managers
 
             _projectionWriters = projectionWriters;
             _projectionDbContextFactory = projectionDbContextFactory;
-            _GoogleSynthesizeOptions = optionsSnapshot.Value;
+            _googleSynthesizeOptions = optionsSnapshot.Value;
 
             Handle<GoogleSynthesizeQueued>(HandleAsync);
             Handle<GoogleSynthesizeFailed>(HandleAsync);
             Handle<GoogleSynthesizeSucceded>(HandleAsync);
+            Handle<GoogleSynthesizeStarted>(HandleAsync);
         }
 
         public async Task HandleAsync(GoogleSynthesizeQueued @event, CancellationToken cancellationToken = default)
@@ -45,6 +46,7 @@ namespace SIO.Domain.GoogleSynthesizes.Projections.Managers
             {
                 Attempts = 0,
                 Subject = @event.Subject,
+                Status = GoogleSynthesizeStatus.Queued,
                 DocumentSubject = @event.DocumentSubject
             }, cancellationToken)));
         }
@@ -60,7 +62,7 @@ namespace SIO.Domain.GoogleSynthesizes.Projections.Managers
             using (var context = _projectionDbContextFactory.Create())
             {
                 var googleSynthesize = await context.Set<GoogleSynthesizeQueue>().FindAsync(@event.Subject);
-                if (googleSynthesize.Attempts == _GoogleSynthesizeOptions.MaxRetries)
+                if (googleSynthesize.Attempts == _googleSynthesizeOptions.MaxRetries)
                 {
                     await Task.WhenAll(_projectionWriters.Select(pw => pw.RemoveAsync(@event.Subject)));
                 }
@@ -68,10 +70,26 @@ namespace SIO.Domain.GoogleSynthesizes.Projections.Managers
                 {
                     await Task.WhenAll(_projectionWriters.Select(pw => pw.UpdateAsync(@event.Subject, epq =>
                     {
+                        epq.Status = GoogleSynthesizeStatus.Failed;
                         epq.Attempts++;
                     })));
                 }
             }
+        }
+
+        public async Task HandleAsync(GoogleSynthesizeStarted @event, CancellationToken cancellationToken = default)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                _logger.LogInformation($"{nameof(GoogleSynthesizeQueueProjectionManager)}.{nameof(HandleAsync)} was cancelled before execution");
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
+            await Task.WhenAll(_projectionWriters.Select(pw => pw.UpdateAsync(@event.Subject, epq =>
+            {
+                epq.Status = GoogleSynthesizeStatus.Processing;
+                epq.Attempts++;
+            })));
         }
 
         public async Task HandleAsync(GoogleSynthesizeSucceded @event, CancellationToken cancellationToken = default)

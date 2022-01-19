@@ -12,9 +12,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
-		<PackageReference Include="SIO.Infrastructure.Serialization.Json" Version="0.0.7" />
+		<PackageReference Include="SIO.Infrastructure.Serialization.Json" Version="0.0.8" />
+        <PackageReference Include="SIO.Infrastructure.Azure.Storage" Version="0.0.8" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -12,7 +12,7 @@ using SIO.Infrastructure.EntityFrameworkCore.DbContexts;
 namespace SIO.Migrations.Migrations.SIO.Projection
 {
     [DbContext(typeof(SIOProjectionDbContext))]
-    [Migration("20220117224937_InitialCreate")]
+    [Migration("20220118133256_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,6 +55,9 @@ namespace SIO.Migrations.Migrations.SIO.Projection
                     b.Property<string>("DocumentSubject")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("Subject");
 
