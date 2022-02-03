@@ -23,24 +23,27 @@ namespace SIO.Domain.GoogleSynthesizes.Services
         private readonly IServiceScope _scope;
         private readonly IEventStore<SIOStoreDbContext> _eventStore;
         private readonly ILogger<EventProcessor> _logger;
-        private readonly IOptionsSnapshot<EventProcessorOptions> _options;
+        private readonly IOptionsMonitor<EventProcessorOptions> _options;
         private readonly ISIOProjectionDbContextFactory _projectionDbContextFactory;
         private readonly string _name;
         private readonly ICommandDispatcher _commandDispatcher;
         private readonly HashSet<string> _eventsToProcess;
 
         public EventProcessor(IServiceScopeFactory serviceScopeFactory,
+            IOptionsMonitor<EventProcessorOptions> options,
             ILogger<EventProcessor> logger)
         {
             if (serviceScopeFactory == null)
                 throw new ArgumentNullException(nameof(serviceScopeFactory));
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
             if (logger == null)
                 throw new ArgumentNullException(nameof(logger));
 
             _scope = serviceScopeFactory.CreateScope();
             _logger = logger;
             _eventStore = _scope.ServiceProvider.GetRequiredService<IEventStore<SIOStoreDbContext>>();
-            _options = _scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<EventProcessorOptions>>();
+            _options = options;
             _projectionDbContextFactory = _scope.ServiceProvider.GetRequiredService<ISIOProjectionDbContextFactory>();
             _commandDispatcher = _scope.ServiceProvider.GetRequiredService<ICommandDispatcher>();
 
@@ -99,7 +102,7 @@ namespace SIO.Domain.GoogleSynthesizes.Services
 
                         if (state.Position == page.Offset)
                         {
-                            await Task.Delay(_options.Value.Interval);
+                            await Task.Delay(_options.CurrentValue.Interval);
                         }
                         else
                         {

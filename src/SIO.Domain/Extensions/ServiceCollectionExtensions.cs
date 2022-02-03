@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SIO.Domain.GoogleSynthesizes;
 using SIO.Domain.GoogleSynthesizes.CommandHandlers;
 using SIO.Domain.GoogleSynthesizes.Commands;
 using SIO.Domain.GoogleSynthesizes.Services;
@@ -12,7 +12,7 @@ namespace SIO.Domain.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddDomain(this IServiceCollection services)
+        public static IServiceCollection AddDomain(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
 
@@ -21,11 +21,10 @@ namespace SIO.Domain.Extensions
             services.AddScoped<ICommandHandler<StartTranslationCommand>, StartTranslationCommandHandler>();
 
             services.AddHostedService<EventProcessor>();
-            services.AddHostedService<GooglerSynthesizer>();
+            services.AddHostedService<GoogleSynthesizer>();
 
-            services.Configure<EventProcessorOptions>(o => o.Interval = 300);
-            services.Configure<GooglerSynthesizerOptions>(o => o.Interval = 300);
-            services.Configure<GoogleSynthesizeOptions>(o => o.MaxRetries = 5);
+            services.Configure<EventProcessorOptions>(configuration.GetSection(nameof(EventProcessor)));
+            services.Configure<GooglerSynthesizerOptions>(configuration.GetSection(nameof(GoogleSynthesizer)));
             return services;
         }
     }

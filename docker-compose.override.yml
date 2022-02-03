@@ -12,6 +12,11 @@ services:
       - Logging__LogLevel__Default=Information
       - Logging__LogLevel__Microsoft=Warning
       - Logging__LogLevel__Microsoft.Hosting.Lifetime=Information
+      - EventProcessor__Interval=5
+      - GoogleSynthesizer__Interval=50
+      - GoogleSynthesizeFailure__Interval=5000
+      - GoogleSynthesizeQueue__Interval=50
+      - GoogleSynthesizer__MaxRetries=5
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

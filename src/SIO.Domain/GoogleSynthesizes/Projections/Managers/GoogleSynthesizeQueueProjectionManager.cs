@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SIO.Domain.GoogleSynthesizes.Events;
+using SIO.Domain.GoogleSynthesizes.Services;
 using SIO.Infrastructure.EntityFrameworkCore.DbContexts;
 using SIO.Infrastructure.Projections;
 
@@ -10,12 +11,12 @@ namespace SIO.Domain.GoogleSynthesizes.Projections.Managers
     {
         private readonly IEnumerable<IProjectionWriter<GoogleSynthesizeQueue>> _projectionWriters;
         private readonly ISIOProjectionDbContextFactory _projectionDbContextFactory;
-        private readonly GoogleSynthesizeOptions _googleSynthesizeOptions;
+        private readonly GooglerSynthesizerOptions _googleSynthesizeOptions;
 
         public GoogleSynthesizeQueueProjectionManager(ILogger<ProjectionManager<GoogleSynthesizeQueue>> logger,
             IEnumerable<IProjectionWriter<GoogleSynthesizeQueue>> projectionWriters,
             ISIOProjectionDbContextFactory projectionDbContextFactory,
-            IOptionsSnapshot<GoogleSynthesizeOptions> optionsSnapshot) : base(logger)
+            IOptionsSnapshot<GooglerSynthesizerOptions> optionsSnapshot) : base(logger)
         {
             if (projectionWriters == null)
                 throw new ArgumentNullException(nameof(projectionWriters));

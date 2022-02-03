@@ -1,7 +1,8 @@
 ﻿namespace SIO.Domain.GoogleSynthesizes.Services
 {
-    internal class GooglerSynthesizerOptions
+    public class GooglerSynthesizerOptions
     {
         public int Interval { get; set; }
+        public int MaxRetries { get; set; }
     }
 }
